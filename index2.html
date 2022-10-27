@@ -13,6 +13,34 @@
             let url = "https://www.google.com/maps/dir/42.44923, -71.19880/42.44815,-71.22971/Battle+Green+Rd,+Lexington,+MA+02421/33+Marrett+Road,+Lexington,+MA";
             window.open(url, "blank");
         }
+        
+        fetch("https://services.arcgis.com/bP0owepHkr9WxF4V/ArcGIS/rest/services/Monument_plaques_Verified/FeatureServer/0/query?f=json&cacheHint=true&resultOffset=0&resultRecordCount=500&where=1%3D1&orderByFields=&outFields=*&returnGeometry=false&spatialRel=esriSpatialRelIntersects")
+        .then(response => response.json())
+        .then(function(json) {
+            console.log(json);
+        })
+
+        async function getAttachmentUrl(memorialId) {
+            var baseAttachmentUrl = "https://services.arcgis.com/bP0owepHkr9WxF4V/arcgis/rest/services/Monument_plaques_Verified/FeatureServer/0/" + memorialId + "/attachments";
+            var getAttachmentInfoUrl = baseAttachmentUrl + "?f=json";
+            var resp = await fetch(getAttachmentInfoUrl);
+            var json = await resp.json();
+            var attachmentInfos = json.attachmentInfos;
+            var attachmentId;
+            if (attachmentInfos.length > 0) {
+                attachmentId = attachmentInfos[0].id;
+            }
+            var retVal;
+            if (attachmentId) {
+                retVal = baseAttachmentUrl + "/" + attachmentId + "?width=200";
+            } else { 
+                retVal = null;
+            }
+            console.log(retVal);
+            return retVal;
+        }
+
+        console.log(getAttachmentUrl(1));
     </script>
  
     <button class="btn btn-light" onclick="switchToMapView()">
